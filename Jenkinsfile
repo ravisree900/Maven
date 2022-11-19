@@ -1,57 +1,26 @@
-pipeline
+node
 {
-    agent any
-    stages
-    {
-        stage('ContinuousDownload')
-        {
-            steps
-            {
-                git 'https://github.com/intelliqittrainings/maven.git'
-            }
-        }
-        stage('ContinuousBuild')
-        {
-            steps
-            {
-                sh 'mvn package'
-            }
-        }
-        stage('ContinuousDeployment')
-        {
-            steps
-            {
-               deploy adapters: [tomcat9(credentialsId: 'bfb67f1d-2f4e-430c-bb8d-30584116bd00', path: '', url: 'http://172.31.51.212:9090')], contextPath: 'test1', war: '**/*.war'
-            }
-        }
-        stage('ContinuousTesting')
-        {
-            steps
-            {
-               git 'https://github.com/intelliqittrainings/FunctionalTesting.git'
-               sh 'java -jar /home/ubuntu/.jenkins/workspace/DeclarativePipeline1/testing.jar'
-            }
-        }
-       
+    stage('continuosDownload') 
+   {
+    git 'https://github.com/intelliqittrainings/maven.git'
     }
-    
-    post
+    stage('continuosBuild') 
     {
-        success
-        {
-            input message: 'Need approval from the DM!', submitter: 'srinivas'
-               deploy adapters: [tomcat9(credentialsId: 'bfb67f1d-2f4e-430c-bb8d-30584116bd00', path: '', url: 'http://172.31.50.204:9090')], contextPath: 'prod1', war: '**/*.war'
-        }
-        failure
-        {
-            mail bcc: '', body: 'Continuous Integration has failed', cc: '', from: '', replyTo: '', subject: 'CI Failed', to: 'selenium.saikrishna@gmail.com'
-        }
-       
+     sh 'mvn package'
     }
-    
-    
-    
-    
-    
-    
+     stage('continuosDeployment') 
+    {
+     deploy adapters: [tomcat9(credentialsId: '78aff9f7-ec4b-41e4-abaf-7b0e4a7acd9c', path: '', url: 'http://172.31.0.169:8080')], contextPath: 'testapp', war: '**/*.war'
+    }
+     stage('continuosTesting') 
+    {
+     git 'https://github.com/intelliqittrainings/FunctionalTesting.git'
+     sh '''java -jar /var/lib/jenkins/workspace/scriptedpipeline/testing.jar'''
+    }
+    stage('continuosDelivery') 
+    {
+     input message: 'need approval from DM', submitter: 'sreenivasa'
+     deploy adapters: [tomcat9(credentialsId: '78aff9f7-ec4b-41e4-abaf-7b0e4a7acd9c', path: '', url: 'http://172.31.4.168:8080')], contextPath: 'prodapp', war: '**/*.war'
+    }
 }
+
