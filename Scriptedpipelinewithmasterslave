@@ -1,0 +1,25 @@
+@Library('mylibrary')_
+node
+{
+    stage("contDownload")
+    {
+        git'https://github.com/intelliqittrainings/maven.git' 
+    }
+    stage("contBuild")
+    {
+        sh'mvn package'
+    }
+    stage("contDeployment")
+    {
+        sh'scp /var/lib/jenkins/workspace/Scriptedpipelinewithmasterslave/webapp/target/webapp.war ubuntu@172.31.11.15:/var/lib/tomcat9/webapps/testapp.war'
+    }
+    stage("contTesting")
+    {
+        git'https://github.com/intelliqittrainings/FunctionalTesting.git'
+        sh 'java -jar /var/lib/jenkins/workspace/Scriptedpipelinewithmasterslave/testing.jar'
+    }
+    stage("contDelivery")
+    {
+        sh'scp /var/lib/jenkins/workspace/Scriptedpipelinewithmasterslave/webapp/target/webapp.war ubuntu@172.31.6.130:/var/lib/tomcat9/webapps/prodapp.war' 
+    }
+}
