@@ -1,0 +1,25 @@
+@Library('mylibrary')_
+node
+{
+    stage("contDownload")
+    {
+       cicd.newDownload("maven.git")
+    }
+    stage("contBuilt")
+    {
+       cicd.newBuild()
+    }
+    stage("contDeployment")
+    {
+       cicd.newDeploy("Scriptedpipelinewithrepeatedjobs","172.31.11.15","testapp")
+    }
+    stage("contTesting")
+    {
+       cicd.newDownload("FunctionalTesting.git")
+       cicd.runselenium("Scriptedpipelinewithrepeatedjobs")
+    }
+    stage("contDelivery")
+    {
+       cicd.newDeploy("Scriptedpipelinewithrepeatedjobs","172.31.6.130","prodapp")
+    }
+}
