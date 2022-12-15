@@ -1,0 +1,25 @@
+@Library('mylibrary')_
+node
+{
+    stage("contDownload")
+    {
+        git'https://github.com/intelliqittrainings/maven.git' 
+    }
+    stage("contBuilt")
+    {
+       sh'mvn package'
+    }
+    stage("contBuilt")
+    {
+       deploy adapters: [tomcat9(credentialsId: '3a80dfa8-36f2-490e-9fa1-538895a72f3b', path: '', url: 'http://172.31.11.15:8080')], contextPath: 'testapp', war: '**/*.war'
+    }
+    stage("contTesting")
+    {
+      git'https://github.com/intelliqittrainings/FunctionalTesting.git'
+      sh 'java -jar /var/lib/jenkins/workspace/Scriptedpipelinewithsharedlibraries/testing.jar'
+    }
+    stage("contDelivery")
+    {
+       deploy adapters: [tomcat9(credentialsId: '3a80dfa8-36f2-490e-9fa1-538895a72f3b', path: '', url: 'http://172.31.6.130:8080')], contextPath: 'prodapp', war: '**/*.war'
+    }
+}
