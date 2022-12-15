@@ -1,0 +1,104 @@
+@Library('mylibrary')_
+pipeline
+{
+    agent any
+    stages
+    {
+        stage("ContDownload")
+        {
+            steps
+            {
+                script
+                {
+                    try
+                    {
+                        git'https://github.com/intelliqittrainings/maven.git' 
+                    }
+                    catch (Exception e1)
+                    {
+                        mail bcc: '', body: 'jenkins failed at gitcode', cc: '', from: '', replyTo: '', subject: 'cicd failed', to: 'Devadmin@gmail.com'
+                    }
+                }
+            }
+        }
+        stage("ContBuild")
+        {
+            steps
+            {
+                script
+                {
+                    try
+                    {
+                        sh'mvn package' 
+                    }
+                    catch (Exception e2)
+                    {
+                        mail bcc: '', body: 'jenkins failed at Build', cc: '', from: '', replyTo: '', subject: 'cicd failed', to: 'Devteam@gmail.com'
+                    }
+                }
+            }
+        }
+        stage("ContDeployment")
+        {
+            steps
+            {
+                script
+                {
+                    try
+                    {
+                        deploy adapters: [tomcat9(credentialsId: '3a80dfa8-36f2-490e-9fa1-538895a72f3b', path: '', url: 'http://172.31.11.15:8080')], contextPath: 'testapp', war: '**/*.war'  
+                    }
+                    catch (Exception e3)
+                    {
+                        mail bcc: '', body: 'jenkins failed at Deploy', cc: '', from: '', replyTo: '', subject: 'cicd failed', to: 'Deployteam@gmail.com'
+                    }
+                }
+            }
+        }
+        stage("ContTesting")
+        {
+            steps
+            {
+                script
+                {
+                    try
+                    {
+                        git'https://github.com/intelliqittrainings/FunctionalTesting.git'
+                    }
+                    catch (Exception e4)
+                    {
+                        mail bcc: '', body: 'jenkins failed at Testingcode', cc: '', from: '', replyTo: '', subject: 'cicd failed', to: 'Testadmin@gmail.com'
+                    }
+                }
+                script
+                {
+                    try
+                    {
+                        sh 'java -jar /var/lib/jenkins/workspace/Declarativepipelinewithexceptionhandling/testing.jar'
+                    }
+                    catch (Exception e5)
+                    {
+                        mail bcc: '', body: 'jenkins failed at Testing', cc: '', from: '', replyTo: '', subject: 'cicd failed', to: 'Testteam@gmail.com'
+                    }
+                }
+            }
+        }
+        stage("ContDelivery")
+        {
+            steps
+            {
+                script
+                {
+                    try
+                    {
+                        deploy adapters: [tomcat9(credentialsId: '3a80dfa8-36f2-490e-9fa1-538895a72f3b', path: '', url: 'http://172.31.6.130:8080')], contextPath: 'prodapp', war: '**/*.war' 
+                    }
+                    catch (Exception e6)
+                    {
+                        mail bcc: '', body: 'jenkins failed at Delivery', cc: '', from: '', replyTo: '', subject: 'cicd failed', to: 'Deliveryteam@gmail.com'
+                    }
+                }
+            }
+        }
+    }    
+}
