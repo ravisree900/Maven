@@ -1,0 +1,59 @@
+@Library('mylibrary')_
+pipeline
+{
+    agent any
+    stages
+    {
+        stage("ContDownload")
+        {
+            steps
+            {
+                script
+                {
+                    cicd.newDownload("maven.git")
+                }
+            }
+        }
+        stage("ContBuild")
+        {
+            steps
+            {
+                script
+                {
+                    cicd.newBuild()
+                }
+            }
+        }
+        stage("ContDeployment")
+        {
+            steps
+            {
+                script
+                {
+                    cicd.newDeploy("Declarativepipelineforrepeatedjobs","172.31.11.15","teatapp")
+                }
+            }
+        }
+        stage("ContTesting")
+        {
+            steps
+            {
+                script
+                {
+                    cicd.newDownload("FunctionalTesting.git")
+                    cicd.runselenium("Declarativepipelineforrepeatedjobs")
+                }
+            }
+        }
+        stage("ContDelivery")
+        {
+            steps
+            {
+                script
+                {
+                    cicd.newDeploy("Declarativepipelineforrepeatedjobs","172.31.6.130","prodapp")
+                }
+            }
+        }
+    }
+}
