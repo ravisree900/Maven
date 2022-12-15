@@ -1,0 +1,60 @@
+@Library('mylibrary')_
+pipeline
+{
+    agent any
+    stages
+    {
+        stage("ContDownload")
+        {
+            steps
+            {
+                script
+                {
+                    git'https://github.com/intelliqittrainings/maven.git' 
+                }
+            }
+        }
+        stage("ContBuilt")
+        {
+            steps
+            {
+                script
+                {
+                    sh'mvn package' 
+                }
+            }
+        }
+        stage("ContDeployment")
+        {
+            steps
+            {
+                script
+                {
+                    deploy adapters: [tomcat9(credentialsId: '3a80dfa8-36f2-490e-9fa1-538895a72f3b', path: '', url: 'http://172.31.11.15:8080')], contextPath: 'testapp', war: '**/*.war' 
+                }
+            }
+        }
+        stage("ContTesting")
+        {
+            steps
+            {
+                script
+                {
+                    git'https://github.com/intelliqittrainings/FunctionalTesting.git'
+                     sh 'java -jar /var/lib/jenkins/workspace/Declarativepipelinewithsharedlibraries1/testing.jar'
+                }
+            }
+        }
+    }
+    post
+    {
+        success
+        {
+            deploy adapters: [tomcat9(credentialsId: '3a80dfa8-36f2-490e-9fa1-538895a72f3b', path: '', url: 'http://172.31.6.130:8080')], contextPath: 'prodapp', war: '**/*.war' 
+        }
+        failure
+        {
+            mail bcc: '', body: 'jenkins failed at Delivery', cc: '', from: '', replyTo: '', subject: 'cicd failed', to: 'ravichandu900@gmail.com'
+        }
+    }
+}
