@@ -1,0 +1,14 @@
+connect to Redhat Server in "Gitbash"
+whoami
+sudo passwd ec2-user
+give password
+sudo vi /etc/ssh/sshd_config
+sudo sshd service restart
+exit
+
+connect to controller in "Gitbash"
+whoami
+ssh-keygen
+ssh-copyid ec2-user@private ip of redhat server
+yes
+give password which is given above
