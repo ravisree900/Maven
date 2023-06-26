@@ -43,7 +43,54 @@
           <target>7</target>
         </configuration>
       </plugin>
-
+      <plugin>
+         <groupId>org.apache.maven.plugins</groupId>
+         <artifactId>maven-pmd-plugin</artifactId>
+         <version>3.21.0</version>
+         <configuration>
+              <rulesets>
+                   <ruleset>rulesets/java/maven-pmd-plugin-default.xml</ruleset>
+              </rulesets>
+              <outputDirectory>${project.build.directory}/pmd</outputDirectory>
+         </configuration>
+         <executions>
+             <execution>
+                  <goals>
+                     <goal>pmd</goal>
+                  </goals>
+             </execution>
+         </executions>
+      </plugin>
+      <plugin>
+         <groupId>org.apache.maven.plugins</groupId>
+         <artifactId>maven-checkstyle-plugin</artifactId>
+         <version>3.1.0</version>
+         <configuration>
+              <configLocation>checkstyle.xml</configLocation>
+              <suppressionsFile>suppressions.xml</suppressionsFile>
+              <failOnViolation>true</failOnViolation>
+         </configuration>
+      </plugin>
+      <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>findbugs-maven-plugin</artifactId>
+          <version>3.0.3</version>
+          <executions>
+             <execution>
+                <id>findbugs</id>
+                <phase>install</phase>
+                <goals>
+                   <goal>findbugs</goal>
+                </goals>
+                <configuration>
+                     <failOnError>true</failOnError>
+                     <threshold>High</threshold>
+                     <effort>Max</effort>
+                     <excludeFilterFile>findbugs-exclude.xml</excludeFilterFile>
+                </configuration>
+             </execution>
+          </executions>
+      </plugin>
       <plugin>
         <artifactId>maven-release-plugin</artifactId>
         <configuration>
